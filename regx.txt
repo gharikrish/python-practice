@@ -1,0 +1,129 @@
+version (9\.3\(([1-9]|7a)\)|10\.1\([12]\)|10\.2\([12]\))
+1^ii\s+?storfs\-core\s+?(4\.5\.2[a-c]|4\.1\.3[if])
+ii  storfs-core                          4.5.2a-39429                          amd64        Springpath Distributed Filesystem
+2.3.5(2e)	
+3.5(2f)	^3\.5\(2[a-h]\)
+4.5(2g)
+4 interface Ethernet(\S+)(?:(?!\n\n|\n\S)[\S\s])*?jlk
+interface Ethernet1/10
+  description connect to N92160
+  dkjad kafafkafjadfb
+  dkjafkf 
+  jlk
+Nexus\s?(5[56]|6)Cisco Nexus N5500, 5600, 6000 
+All codes below and including 7.3(10)N1(1)
+First fixed on 7.3(11)N1(1)
+(7\.0\([0-8]\)N1\(1\)|7\.0\(5\)N1\(1a\)|7\.1\(0\)N1\(1[ab]\)|7\.1\([1-5]\)N1\(1\b\)|7\.1\(3\)N1\(2\)|7\.1\(5\)N1\(1b\)|7\.2\([01]\)N1\(1\)|7\.3\([0-9]\)N1\(1\b\)|7\.3\(10\)N1\(1\)|7\.3\(7\)N1\(1[ab]\))
+ip route static bfd Ethernet1/5 10.1.1.2    ^ip route static bfd Ethernet(\S+) (\S+)
+interface Ethernet1/5
+  bfd interval 500 min_rx 500 multiplier 3
+(^interface Ethernet{% eth %}\b(?:(?!\n\n|\n\S)[\S\s])*?ip address (\S+)\/\d+?)
+
+interface Ethernet1/6
+  no switchport
+  ip address 192.1.1.1/30
+  ip igmp join-group 238.1.1.1 source 10.10.10.10
+(^interface \S+?(?:(?!\n\n|\n\S)[\s\S])*)
+version (7\.0\(3\)I[1-3]|7\.0\(3\)I4\(([1-8]\b|8[ab])\)|7\.0\(3\)I[56]\([12]\)|7\.0\(3\)I7\(([1-9]|5a|10)\)|9\.2\(([1-4])\)|9\.3\(([1-8]|7a)\)|10\.1\([12]\)|10\.2\(1\))
+Vulnerable codes: 10.1(2), 9.3(8) or below, all 7.0(3) releases
+- First fixed on 10.2(4), 9.3(9)
+1    54   48x10/25G/32G + 6x40/100G Ethernet/FC N9K-C93180YC-FX       active *
+^\d+?\s+?\d+?[\S ]+? N9K-[CX]9\S+?-[EF]X\s+?
+
+^interface \S+?(?:(?!\n\n|\n\S)[\S\s])*?mac port access-group (\S+)
+interface Ethernet1/4
+  switchport
+  mac port access-group test 
+  mtu 9216
+  speed 1000
+  no shutdown
+^mac access-list \b(?:(?!\n\n|\n\S)[\S\s])*?0x8903 variable call ^mac access-list {% macgrp %}\b(?:(?!\n\n|\n\S)[\S\s])*?0x8903
+mac access-list test
+  statistics per-entry
+  10 permit any any 0x8903 
+  20 permit any any 
+
+MAC access list test
+        statistics per-entry
+        10 permit any any 0x8903 [match=0]  
+        20 permit any any [match=34623679] ^MAC access list \b(?:(?!\n\n|\n\S)[\S\s])*?0x8903
+interface Ethernet1/1
+  description n:tcr-ars-301 p:1/49
+  switchport
+  switchport mode trunk
+  ip port access-group DBR_IP_R1 in
+  ipv6 port traffic-filter DBR_IPv6_R1 in
+  mac port access-group DBR_MAC_DENY_ANY
+  mode tap-aggregationin
+CSCwb99717
+1) ip - simplify regex to match ip access-list with redirect
+^ip access-list (\S+)(?:(?!\n\n|\n\S)[\S\s])*?redirect
+2) interface - simplify regex
+^interface Ethernet\S+?(?:(?!\n\n|\n\S)[\S\s])*?ip port access-group {% name %}\b in[\S\s]*?mode tap-aggregation
+ip access-list DBR_IP_R1
+  statistics per-entry
+  10 permit ip any any vlan 1233 redirect port-channel100,Ethernet1/21 
+  11 remark CMG901101-10012000-IMS
+  20 permit ip any any vlan 1234 redirect port-channel100,Ethernet1/21 
+
+  21 remark CMG901101-10012000-IMS
+ "displayVersion": "5.0(1b)",\"displayVersion\": \"5\.0\.1b\",
+ "upgradeVersion": "5.0.1b-41129"\"upgradeVersion\": \"5\.0\.1b-\S+?\"
+\"displayVersion\": \"4\.5(\(1a\)|\(2a\))  "displayVersion": "4.5(1a)",
+^(?:\d+?\s+?){3}innusd(?:\s+?\S+){3} -1    1       1         innusd           26946     2023-02-01 06:52:04
+^[\S ]+?\%SYSMGR-SLOT\d+?-\d+?-SERVICE_CRASHED: Service \"innusd\" \(PID \d+?\) hasn\'t caught signal 11 \(core will be saved\)- 2023 Feb  1 06:49:34.358 ASYCHE42 %$ VDC-1 %$ %SYSMGR-SLOT1-2-SERVICE_CRASHED: Service "innusd" (PID 26946) hasn't caught signal 11 (core will be saved).
+  ^([\S ]+?cmd=configure terminal ; interface port-channel(\d+)(?: ; shutdown)? \((?:REDIRECT|SUCCESS)\))-Wed Feb  1 06:49:11 2023:type=update:id=10.82.235.223@pts/0:user=admin:cmd=configure terminal ; interface port-channel260 (SUCCESS)
+^1\) At \d+? usecs [\S ]+?\s+?Reason\: Reset Requested due to Fatal Module Error\s+?Service\: tahusd hap reset 
+1) At 546966 usecs after Tue Feb 14 20:26:18 2023
+    Reason: Reset Requested due to Fatal Module Error
+    Service: tahusd hap reset     
+1    1       1         tahusd           25855     2023-02-14 20:28:07  *
+^(?:\d+?\s+?){3}tahusd\b\s+?\d+?\s+?\S+
+router bgp 65003.20201
+  router-id 10.110.136.43
+  timers bgp 10 30
+  bestpath as-path multipath-relax
+  bestpath always-compare-med
+  neighbor-down fib-accelerate
+  log-neighbor-changes
+  address-family ipv4 unicast
+    network 10.110.136.43/32
+    maximum-paths 64 <<<<<<<<<<
+^router bgp \d+?(?:(?!\n\n|\n\S)[\S\s])*?maximum-paths \d+
+(\d+)\s+?Po\d+?\(\S+?\)\s+?\S+?\s+?NONE\s+((?:Eth\S+\(P\)\s+)*))
+1     Po1(SU)     Eth      NONE      Eth2/1(P)    Eth2/2(P)  
+^interface port-channel{}\b(?:(?!\n\n|\n\S)[\S\s])*?vpc peer-link
+interface port-channel1 <<<<< port-channel number
+  switchport
+  switchport mode trunk
+  spanning-tree port type network
+  vpc peer-link.
+interface Ethernet2/1
+ptp  
+  ptp vlan 32
+  switchport
+  switchport mode trunk
+  channel-group 1 <<<<<<<<< configured as a member port
+  no shutdown
+^interface Ethernet{0}\b\s+?(?:(?!\n\n|\n\S)[\S\s])*?channel-group {1}\b)
+^((?:\s+?\S+?\s+?\|){2}\s+?(\S+)\s+?\|\s+?0\s+?\|(?:\s+?\S+?\s+?\|){2}[\S ]+)(?:(?!\n\n|\n\S)[\S\s])*?^((?:\s+?\S+?\s+?\|){2}\s+?\2\s+?\|\s+?1\s+?\|(?:\s+?\S+?\s+?\|){2}[\S ]+)
+1\) At \d+? usecs [\S ]+?\s+?Reason: Reset (?:Requested by CLI command reload|due to upgrade)\s+?Service:\s+?Version: (?:9\.3\(8\)|10\.1\([12]\)|10\.2\(1\))
+1) At 228876 usecs after Fri Feb  4 20:57:35 2022
+		    Reason: Reset due to upgrade
+		    Service: 
+		    Version: 9.3(4)
+^Vlan(\d+) is down \(VLAN/BD is down\), line protocol is down, autostate enabled
+Vlan2000 is down (VLAN/BD is down), line protocol is down, autostate enabled
+^interface Vlan\d+?(?:(?!\n\n|\n\S)[\S\s])*
+interface Vlan2000
+  no shutdown               >> ensure this is present, means admin up
+  mtu 9216
+  vrf member bokf_50000.     >> store this vrf name
+  ip forward.              >>> ip forward must be present
+  ipv6 forward
+  no ipv6 redirects
+^\s*?no shutdown-  no shutdown   
+1    1       1         netconf-proxy    24076     2021-12-14 10:44:34  
+(?:\d+?\s+?){3}netconf(?:\S*)?\s+?\d+?[\S ]+
+[\S ]+?(?:%SYSMGR-\d+?-SERVICE_CRASHED: Service \"netconf(?:\S*)?\" \(PID \d+?\) hasn\'t caught signal (?:6|11) \(core will be saved\)\.|%FEATURE-MGR-\d+?-FM_FEATURE_OP_TIMEOUT_ERROR: feature netconf operation failed on response timeout from service: netconf with uuid \(0xa40\))
+2021 Dec 14 10:44:21 UCITMIADCF-DCN-SL03 %$ VDC-1 %$ %FEATURE-MGR-2-FM_FEATURE_OP_TIMEOUT_ERROR: feature netconf operation failed on response timeout from service: netconf with uuid (0xa40)                                  

@@ -1,0 +1,46 @@
+cond:1
+
+  [0x0000:0x0003:0x0003] permit lbl(0x0 - mismatch) ip 0.0.0.0/0 0.0.0.0/0   [0]
+  [0x0001:0x0004:0x0004] permit lbl(0x0 - mismatch) tcp 0.0.0.0/0 range 1024 2047 0.0.0.0/0 eq 179   [0]
+  [0x0002:0x0005:0x0005] permit lbl(0x0 - mismatch) tcp 0.0.0.0/0 range 2048 4095 0.0.0.0/0 eq 179   [0]
+  [0x0002:0x0005:0x0005] deny lbl(0x0 - mismatch) tcp 0.0.0.0/0 range 2048 4095 0.0.0.0/0 eq 179   [0]
+
+search for following strings "permit lbl(0x0 - mismatch)" or "deny lbl(0x0 - mismatch)"
+
+
+cond:2
+`show module`
+Mod Ports             Module-Type                      Model           Status
+--- ----- ------------------------------------- --------------------- ---------
+1    54   48x1/10G-T 6x40G Ethernet Module      N9K-C9372TX           ok        
+27   0    Virtual Supervisor Module             N7K-C9372FX           active *  
+
+
+match  model and status
+
+
+cond:3
+
+`show cores`
+VDC  Module  Instance  Process-name     PID       Date(Year-Month-Day Time)
+---  ------  --------  ---------------  --------  -------------------------
+1    27      1         thaud              18803     2022-03-02 14:05:50
+1    27      1         kim              8793      2022-07-01 16:57:1
+
+match process name and pid value
+
+cond4:
+
+2022 Jul  1 16:56:49 hod-as31 %$ VDC-1 %$ %SYSMGR-2-SERVICE_CRASHED: Service "kim" (PID 8793) hasn't caught signal 11 (core will be saved).
+2022 Jul  1 16:56:49 hod-as31 %$ VDC-1 %$ %SYSMGR-2-SERVICE_CRASHED: Service "thaud" (PID 18803) hasn't caught signal 9 (core will be saved).
+
+Use process name and pid value here and macth entire log line "%SYSMGR-2-SERVICE_CRASHED: Service "step 2 value " (step 2 value ) hasn't caught signal 11 (core will be saved)"
+
+cond:5
+
+`show kim internal info`
+Vlan 81 IPMC 0xdb VNI 0x9a91, DVIF 0x0 vni_layer 2
+         Current egress VNI 1 num_egress_vnis 531  
+         egress vnis :  37119 37008
+
+need to match"Current egress VNI 1 num_egress_vnis <value should be >512> "

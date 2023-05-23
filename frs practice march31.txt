@@ -1,0 +1,42 @@
+Logic:1
+
+condition:1    
+`show module`
+Mod Ports             Module-Type                      Model           Status
+--- ----- ------------------------------------- --------------------- ---------
+1    36   36x40/100G QSFP28 Ethernet Module     N9K-C9364C-GX        active *  
+
+
+
+need to check below values in Model
+N9K-C9364C-GX
+N9K-C9364C-GX=
+N9K-C93180YC-FX3
+N9K-C93180YC-FX3=
+N9K-C9336C-FX2
+N9K-C9336C-FX2=
+
+condition:2
+
+2022 Dec  2 14:19:23.695 esw24246tvd %DAEMON-3-SYSTEM_MSG: Location: SOCKET:0 CHANNEL:? DIMM:? [] - mcelog
+2022 Dec  2 18:12:04.414 esw24246tvd %DEVICE_TEST-3-MCE_24HR_FAIL: Module 1 has exceeded MCE 24 hour correctable threshold of 100 with 107 correctable errors within 24 hours.
+2022 Dec  2 21:28:32.974 esw24246tvd %DAEMON-3-SYSTEM_MSG: corrected Socket memory error count exceeded threshold: 202 in 24h - mcelog
+
+
+To match:
+2022 Dec  2 14:19:23.695 esw24246tvd %DAEMON-3-SYSTEM_MSG: Location: SOCKET:0 CHANNEL:? DIMM:? [] - mcelog
+
+Following string should be matched:
+"Location: SOCKET:0 CHANNEL:? DIMM:? [] - mcelog"
+
+To match:
+2022 Dec  2 18:12:04.414 esw24246tvd %DEVICE_TEST-3-MCE_24HR_FAIL: Module 1 has exceeded MCE 24 hour correctable threshold of 100 with 107 correctable errors within 24 hours.
+
+Following string should be matched:
+"Module 1 has exceeded MCE 24 hour correctable threshold of 100 with <any number equal or higher than 100> correctable errors within 24 hours"
+
+To match:
+2022 Dec  2 21:28:32.974 esw24246tvd %DAEMON-3-SYSTEM_MSG: corrected Socket memory error count exceeded threshold: 202 in 24h - mcelog
+
+Following string should be matched:
+"corrected Socket memory error count exceeded threshold: <any number> in 24h - mcelog"

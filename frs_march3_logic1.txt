@@ -1,0 +1,37 @@
+cond:1
+model should be nexus 3524P-10F or 3548P-10G switch
+
+`show module`
+Mod Ports             Module-Type                       Model          Status
+--- ----- ------------------------------------- --------------------- ---------
+1    48   48x10GE Supervisor                    N3K-C3548P-10G        active *
+
+
+cond:2
+
+interface Vlan5
+  no shutdown
+  ip access-group BLOCK-HOST out        <<< ip access-group (VALUE) out
+  ip address 56.1.187.1/24           <<<< ip address (any value)/here number will 20 to 29
+  ip router ospf test area 0.0.0.0
+
+need to use the above ip access-group value in below step  
+
+cond:3
+Tue Nov 29 20:39:42 2022:type=update:id=console0:user=admin:cmd=configure terminal ; interface Vlan5 ; ip access-group BLOCK-HOST out (REDIRECT)   <<<
+Tue Nov 29 20:39:42 2022:type=update:id=console0:user=admin:cmd=configure terminal ; interface Vlan5 ; ip access-group BLOCK-HOST out (SUCCESS) <<<<
+
+need to match .*cmd=configure terminal ; interface Vlan5 ; ip access-group(step 2 value) redirect or success
+
+cond4:
+router ospfv3 2
+  router-id 10.19.254.17
+  area 0.0.0.155 nssa no-summary default-information-originate
+  log-adjacency-changes
+  address-family ipv6 unicast
+    area 0.0.0.155 range 2a00:fe00:1000::/36 cost 300
+    area 0.0.0.155 range 2a00:fe00:2000::/36 cost 300
+    area 0.0.0.155 default-cost 1000
+    summary-address 2000:fe00:1000::/3                   <<<<<<<<<< most likely this is cut off by one digit and issue is hit
+
+match summary-address any value/single digit

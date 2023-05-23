@@ -1,0 +1,150 @@
+from borg3.result import ResultList, OkResult, MissingInfoResult
+from borg3.result import NotApplicableResult, NotApplicableResultCodes, Severity
+from task_nxos_borgv3_library import NXOSBorgModule , get_timestamp_from_log, Validation, ValidationSource, ValidationType, validate_borg_module, BORG_RSLT_TYPE, NA_CODES
+from task_nxos_borgv3_library import is_bug_integrated,NexusTime
+import time, re
+import bdblib
+from datetime import datetime
+__copyright__ = "Copyright (c) 2018 Cisco Systems. All rights reserved."
+
+
+def borg_module(env, device_meta_data, meta_data, squarewheels4, filename, cisco_bug_details):
+    """
+    CSCwf13179 - VLAN Filter Allows an ACL with the 'log' keyword to be used when applied to a non-existent VLAN
+    """
+    start_time = time.time()
+    result_list = ResultList()
+    snippet = []
+    nexus_hostname = device_meta_data.get_hostname()
+    nexus_version = device_meta_data.get_version()
+    nexus_family = device_meta_data.get_family()
+    
+    if nexus_family != 'n9k' and nexus_family != 'unknown':
+        result_list.debug("HW is not matching Nexus 9K platforms")
+        result_list.add_result(NotApplicableResult(reason_code=NotApplicableResultCodes.HW_NOT_APPLICABLE))
+        return result_list
+    
+    nexus_time = NexusTime(meta_data['device'].get_device_time())
+    result_list.debug('nexus_time: ' + nexus_time.as_string)
+    
+    nxos_module = NXOSBorgModule(meta_data, squarewheels4, cisco_bug_details)
+    
+    bug = ' CSCwf13179'
+    current_version = meta_data['device'].get_version()
+    if is_bug_integrated(cisco_bug_details, current_version, bug):
+        # If the bug is already integrated in the current version, ignore the case
+        result_list.debug(current_version)
+        result_list.debug('Bug is integrated')
+        result_list.add_result(NotApplicableResult(reason_code=NotApplicableResultCodes.SW_NOT_APPLICABLE))
+        return result_list
+    
+    missing_commands = []
+    if not squarewheels4.get(command__match=r'`show running(-config)?\s*?`'):
+        missing_commands.append('show running-config')
+    if missing_commands:
+        result_list.add_result(MissingInfoResult(required_info=missing_commands))
+        return result_list
+    
+    delta_ts = datetime.now() - nexus_time.as_datetime
+    if delta_ts.days > 15:
+        result_list.debug("Data collected from Nexus switch is {} days old.".format(delta_ts.days))
+        recent = False
+    else:
+        result_list.debug("Data collected from Nexus switch is recent.")
+        recent = True
+        
+        
+    # Checking module number in show module
+    flag = False
+    ip_acc_log = ''
+    permit_log = ''
+    vlan_log = ''
+    vlan_filter_log = ''
+    
+    show_run = squarewheels4.get(command__match=r'`show running(-config)?\s*?`').text
+    
+    ip_acc_list = re.findall(r'^((ip access-list (\S+))(?:(?!^ip access-list \S+?)[\S\s])*)', show_run, re.M)
+    for acc in ip_acc_list:
+        permit = re.search(r'(\d+) permit [\S ]+?log ', acc[0], re.M)
+        if permit:
+            vlan = re.search(r'^vlan access-map (\S+) \d+?\s+?match ip address {}\b'.format(acc[2]), show_run, re.M)
+            if vlan:
+                vlan_filter = re.search(r'^vlan filter {}\b vlan-list \d+'.format(vlan.group(1)), show_run, re.M)
+                if vlan_filter:
+                    ip_acc_log = acc[1]
+                    permit_log = permit.group()
+                    vlan_log = vlan.group()
+                    vlan_filter_log = vlan_filter.group()
+                    flag = True
+                    break
+    
+    if not flag:
+        result_list.add_result(OkResult(title='Expected result is not found for ACL and VLAN access-map and VLAN filter call logs . Your version of code is not vulnerable to bug CSCwf13179'))
+        return result_list
+    
+    snippet.append('`show running-config`')
+    snippet.append(ip_acc_log)
+    snippet.append(permit_log)
+    snippet.append(vlan_log)
+    snippet.append(vlan_filter_log)
+
+    borg_title = " VLAN Filter Allows an ACL with the 'log' keyword to be used when applied to a non-existent VLAN. '{0} :: {1}' is vulnerable to bug CSCwf13179".format(nexus_hostname,nexus_version)
+    borg_problem = '''Symptoms:
+                    - VLANs are suspended on interfaces after a VLAN Filter is applied.
+                    - At first the only VLANs affected are the ones identified by the 'vlan-list' component of the VLAN Filter.
+                    - If the affected interfaces are flapped, the suspension will spread to all VLANs currently hosted on the interfaces that were flapped.
+                    The switch will generate logs similar to:
+                    - %ETHPORT-3-IF_ERROR_VLANS_SUSPENDED: VLANs 2707 on Interface Ethernet1/2 are being suspended. (Reason: ACL Logging is not supported in egress direction.)
+                    - %ETHPORT-5-IF_SEQ_ERROR: Error ("ACL Logging is not supported in egress direction.") communicating with MTS_SAP_SPM for opcode MTS_OPC_ETHPM_PORT_LOGICAL_BRINGUP (RID_PORT: Ethernet1/2)
+     Conditions: - A VACL is configured and tied to an ACL that includes the 'log' keyword.
+                 - The VACL is then used in a VLAN Filter for a non-existent VLAN
+                 - The non-existent VLAN is configured after the VLAN Filter by doing 'vlan X' where X is the relevant VLAN
+                    switch# show ip access-lists TAC_ACL
+                    IP access list TAC_ACL
+                            10 permit ip any any log <<<<<
+                    switch# show vlan access-map TAC_VACL
+                    Vlan access-map TAC_VACL 10
+                            match ip: TAC_ACL <<<<<
+                            action: drop
+                    vlan filter TAC_VACL vlan-list 2707
+                    switch# show vlan id 2707
+                    VLAN 2707 not found in current VLAN database'''
+    borg_problem += '\nReference : <a href="{link}" target="_blank">CSCwf13179</a>'
+    borg_problem_external = borg_problem.format(link="https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwf13179")
+    borg_problem = borg_problem.format(link="https://scripts.cisco.com/app/quicker_cdets/?bug=CSCwf13179")
+    borg_next_steps = '''- Remove the VLAN Filter configuration
+                        or
+                        - Remove the 'log' keyword from the ACL used by the VACL
+                        After either of the two steps above are done, it is necessary to flap all of the affected interfaces by doing 'shutdown' and then 'no shutdown'.\n'''
+    borg_title_external = borg_title
+    borg_next_steps_external = borg_next_steps
+    borg_severity = Severity.WARNING
+#     recent = True
+    borg_snippet = snippet
+    # Create NXOSBorgModule object
+#     nxos_module = NXOSBorgModule(meta_data, squarewheels4)
+    # Set internal data for BORG Alert
+    nxos_module.set_internal_alert(borg_title, borg_problem, borg_next_steps)
+    # Set external data for BORG Alert (optional)
+    nxos_module.set_external_alert(borg_title_external, borg_problem_external, borg_next_steps_external)
+    # Set result attributes for BORG Alert
+    nxos_module.set_result_attributes(borg_snippet, borg_severity, recent)
+    # Get Result() object for BORG Alert
+    borg_result = nxos_module.generate_alert()
+    result_list.add_result(borg_result)
+    result_list.debug("--- %s seconds ---" % (time.time() - start_time))
+    return result_list
+def task(env, render_type='html', show_tech="", validation_type="issue", log=False):
+    """
+    Validate BORG module against the SR & attachment to verify the correct BORG result is returned.
+    """
+    if not show_tech:
+        VALIDATIONS = [
+    Validation(ValidationSource.CSONE, "695484774", "CSCwf13179_positive.txt", ValidationType.POSITIVE),
+    Validation(ValidationSource.CSONE, "695484774", "CSCwf13179_negative.txt", ValidationType.NEGATIVE),
+    ]
+    else:
+        VALIDATIONS = [
+            Validation(ValidationSource.FILE, "", show_tech, validation_type)
+        ]
+    return validate_borg_module(env, __name__.replace("task_", ""), VALIDATIONS, render_type, True)

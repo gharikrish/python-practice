@@ -1,0 +1,55 @@
+cond:1
+
+`show module`
+
+    Mod Ports             Module-Type                      Model           Status
+    --- ----- ------------------------------------- --------------------- ---------
+    1    36   36x100G Ethernet Module               N9K-X9736C-EX         ok        
+    2    52   48x10/25G + 4x40/100G Ethernet Module N9K-X97160YC-EX       ok      <<< module of type N9K.*-EX  
+    22   0    16-slot Fabric Module                 N9K-C9516-FM-E        ok     
+
+
+cond:2
+`show running-config`
+
+no system urpf disable
+nv_overlay          <<<<
+feature vpc         <<<<
+
+match above marked lines
+
+
+cond:3
+ Check for any interface with "ip verify unicast source reachable-via rx"
+`show running-config`
+
+    interface Vlan756
+      description scc-net
+      no shutdown
+      vrf member backbone
+      ip flow monitor flowmonitorv4 input
+      ipv6 flow monitor flowmonitorv6 input
+      no ip redirects
+      ip address 141.52.8.129/25
+      ip directed-broadcast directed-broadcast
+      ip unreachables
+      ip verify unicast source reachable-via rx <<<<< (can be ip or ipv6)
+
+
+cond:4
+`show logging log`
+
+2021 Dec  7 03:19:42.650 VDI_CN_TOR_5B-065016_01 %ICAM-2-SCALE_THRESHOLD_EXCEEDED_CRIT: Utilization of 104 percent for feature RPVST vPorts is over the critical threshold. (message repeated 1 time)
+
+2021 Dec  7 05:19:44.721 VDI_CN_TOR_5B-065016_01 %ICAM-2-SCALE_THRESHOLD_EXCEEDED_CRIT: Utilization of 104 percent for feature RPVST vPorts is over the critical threshold. (message repeated 1 time)
+
+2021 Dec  7 07:19:46.311 VDI_CN_TOR_5B-065016_01 %ICAM-2-SCALE_THRESHOLD_EXCEEDED_CRIT: Utilization of 104 percent for feature RPVST vPorts is over the critical threshold. (message repeated 1 time)
+
+2021 Dec  7 09:19:48.199 VDI_CN_TOR_5B-065016_01 %ICAM-2-SCALE_THRESHOLD_EXCEEDED_CRIT: Utilization of 104 percent for feature RPVST vPorts is over the critical threshold. (message repeated 1 time)
+
+In above logs we should match at least one string :
+
+"%ICAM-2-SCALE_THRESHOLD_EXCEEDED_CRIT: Utilization of <number> percent for feature RPVST vPorts"
+
+Where <number> should be number bigger than 90.
+    

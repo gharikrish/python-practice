@@ -1,0 +1,78 @@
+Logic1:
+
+condition:1
+
+feature nxapi
+feature bash-shell
+feature scp-server
+feature sftp-server
+feature tacacs+
+cfs eth distribute
+nv overlay evpn
+feature ospf
+feature bgp
+feature pim
+feature interface-vlan
+feature vn-segment-vlan-based
+feature lacp
+feature dhcp
+feature vpc                      
+feature lldp
+feature bfd
+
+-->In above we need to check "feature bgp" and "feature vpc"
+
+
+condition:2
+
+VDC  Module  Instance  Process-name     PID       Date(Year-Month-Day Time)
+---  ------  --------  ---------------  --------  -------------------------
+1    1       1         ipfib            27446     2023-01-17 20:30:30
+2    3       1         tahud            27446     2023-01-17 20:30:30
+
+in above need to "process name" and used this in condition 3
+
+condition:3
+Reset Reason (SW): Reset Requested due to Fatal Module ipfib hap reset at time Tue Jan 16 20:29:20 2023
+Reset Reason (SW): Reset Requested due to tahud  Module tahud hap reset at time Tue Jan 17 20:29:20 2023
+Reset Reason (SW): Reset Requested due to Fatal Module coreip hap reset at time Tue Jan 19 20:29:20 2023
+Reset Reason (SW): Reset Requested due to tahud  Module kernel hap reset at time Tue Jan 18 20:29:20 2023
+
+
+need to match "Reset Reason (SW): Reset Requested due to Fatal Module" and use condition2 "process-name"here
+
+
+------------------------------------------------------------------+++-----------------------------------------------------------------
+
+Logic:2
+
+condition:1
+
+feature nxapi
+feature sftp-server
+feature tacacs+
+cfs eth distribute
+nv overlay evpn
+feature ospf
+feature bgp                   
+feature lldp
+feature bfd
+
+need to match "nv overlay evpn"
+
+condition:2
+
+[01/12/23 21:14:03.161 UTC 13d0973 10635] [4017568128][tm_queue.c:951] TM_QUEUE: Telemetry memory limit reached dropping collection request to queue subscription:125 sensor group:118 collection_id:9555322 collector_type:NX-API
+[01/12/23 21:14:03.162 UTC 13d0974 10635] [4017568128][tm_mem.c:226] TM_MEM: Crossed Memory limit cur_mem_size:1485660160, cur_vm_size:2899697664 limit:2899102924
+
+Need to match "TM_QUEUE: Telemetry memory limit reached dropping collection request"
+Need to match "TM_MEM: Crossed Memory limit"
+
+condition:3
+
+Memory:
+      Allowed Memory Limit                = 120 gb
+      Occupied Memory                     = 140 gb
+
+Check if Occupied Memory value is bigger than Allowed Memory Limit.
+

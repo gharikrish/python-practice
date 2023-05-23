@@ -1,0 +1,27 @@
+https://regex101.com/r/XKKBhL/1
+
+(?:(?!\n\n|\n\S)[\s\S])*?------> multiline bulkfetch
+
+            ------> Donot use multipletimes in a single pattren
+
+[\S ]+? -----> Single line
+
+\S+? -------> match anything without space
+
+[\S\s]+?------> matches whole line including spaces
+
+
+
+
+[S ]+? -->match anything in a single line including spaces also
+
+\S+?--?match anything in a single line except space
+
+[\S ]+?
+
+ex:abc def ghi -->it will macth entire line
+
+\S+?
+
+ex:abc def ghi-->it will match only abc ,because space is there after abc .so it will stop there
+

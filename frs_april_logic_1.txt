@@ -1,0 +1,28 @@
+cond:1
+	"Moid": "63d7c29d6875702d3091f171",
+	"Version": "1.0.9-536", <<<<<<<<<<<<<
+	"StartTime": "2023-01-30T10:16:36Z",
+	"EndTime": "2023-01-30T13:14:01Z",
+	"CloudUrl": "https://www.intersight.com",
+	"BuildType": "release",
+
+need to macth ""Version": "1.0.9-number"" and here number should be less than 536
+
+cond:2
+{"level":"info","ts":"2023-03-14T13:30:54.642703Z","caller":"barcelona/browse/admb/partition_assignor.go?at=fe39db2#107","msg":"Topics: [AD.read.alpha] Current Members(In Cache): [0]","service":"alpha","pod":"alpha-0"}
+
+{"level":"info","ts":"2023-03-14T11:45:50.046Z","caller":"barcelona/browse/admb/partition_assignor.go?at=abf0b5d#105","msg":"Topics: [AD.read.rocky] Current Members(In Cache): [0]","service":"rocky","pod":"rocky-0"}
+
+need to match .*"caller":barcelona.*Topics":[AD.read.<VALUE>] Current Members(In Cache) and here value should be rocky or alpha
+
+Cond:3
+1) At 838779 usecs after Sun Feb 19 22:28:27 2023
+    Reason: Kernel Panic
+    Service: 
+    Version: 9.3(9)
+check for reason and version
+
+cond:4
+2023 Feb 11 06:13:57.294 PDC-VxRail-Mgmt-SW01 %$ VDC-1 %$ %PLATFORM-2-MEMORY_ALERT: Memory Status Alert : CRITICAL.  Usage 86% of Available Memory
+
+check for "MEMORY_ALERT: Memory Status Alert : CRITICAL." and Usage <number lessthan 87>of Available Memory
